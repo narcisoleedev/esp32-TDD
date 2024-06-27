@@ -10,4 +10,3 @@ in the development cycle.
 More information about PlatformIO Unit Testing:
 - https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
 
-sudo chmod a+rw /dev/ttyACM0
