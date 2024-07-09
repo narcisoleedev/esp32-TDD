@@ -83,22 +83,30 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    String serverPath = "http://192.168.0.8:8000/things";
-    http.begin(serverPath.c_str());
-
-    int httpResponseCode = http.GET();
-
-    if (httpResponseCode > 0) {
-      Serial.print("HTTP Response code:");
-      Serial.println(httpResponseCode);
-      String payload = http.getString();
-      //Serial.println(payload);
+    // Resolve mDNS name
+    int n = MDNS.queryService("wot", "tcp");
+    if (n == 0) {
+      Serial.println("No services were found");
     } else {
-      Serial.print("Error code:");
-      //Serial.println(httpResponseCode);
+      Serial.println("Service found");
+      String serverPath = "http://" + MDNS.IP(n).toString() + ":8000/things/urn:dev:ops:32473-ESP32-001";
+      Serial.println(serverPath);
+      http.begin(serverPath.c_str());
+      int httpResponseCode = http.PUT(credentials::thingDescription);
+      if (httpResponseCode = 201) {
+        Serial.print("HTTP Response code:");
+        Serial.println(httpResponseCode);
+        String payload = http.getString();
+        Serial.println(payload);
+      } else {
+        Serial.print("HTTP Response code:");
+        Serial.println(httpResponseCode);
+        String payload = http.getString();
+        Serial.println(payload);
+      }
+      gotResponse = true;
+      http.end();
     }
-    gotResponse = true;
-    http.end();
   } else {
     Serial.println("WiFi Disconnected");
   }
