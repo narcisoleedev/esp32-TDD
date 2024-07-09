@@ -80,26 +80,38 @@ void blinkLed() {
 
 void loop() {
   server.handleClient();
-
+  
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     // Resolve mDNS name
-    int n = MDNS.queryService("wot", "tcp");
+    int n = MDNS.queryService("_wot", "_tcp");
     if (n == 0) {
       Serial.println("No services were found");
     } else {
-      Serial.println("Service found");
-      String serverPath = "http://" + MDNS.IP(n).toString() + ":8000/things/urn:dev:ops:32473-ESP32-001";
+      Serial.print("Number of services found: ");
+      Serial.println(n);
+      for (int i = 0; i < n; ++i) {
+        // Print details of each service found
+        Serial.print("Service: ");
+        Serial.println(MDNS.hostname(i));
+        Serial.print("IP: ");
+        Serial.println(MDNS.IP(i));
+        Serial.print("Port: ");
+        Serial.println(MDNS.port(i));
+      }
+
+      // Use the first service found
+      String serverPath = "http://" + MDNS.IP(0).toString() + ":8000/things/urn:dev:ops:32473-ESP32-001";
       Serial.println(serverPath);
       http.begin(serverPath.c_str());
       int httpResponseCode = http.PUT(credentials::thingDescription);
-      if (httpResponseCode = 201) {
-        Serial.print("HTTP Response code:");
+      if (httpResponseCode == 201) {
+        Serial.print("HTTP Response code: ");
         Serial.println(httpResponseCode);
         String payload = http.getString();
         Serial.println(payload);
       } else {
-        Serial.print("HTTP Response code:");
+        Serial.print("HTTP Response code: ");
         Serial.println(httpResponseCode);
         String payload = http.getString();
         Serial.println(payload);
