@@ -51,8 +51,8 @@ void setup() { /////////////////////////////////////////////////////////////////
     Serial.println("Error starting mDNS");
     return;
   }
-  MDNS.addService("http", "tcp", credentials::port);
-  Serial.println("mDNS responder started");
+  //MDNS.addService("http", "tcp", credentials::port);
+  //Serial.println("mDNS responder started");
 
   if (!MDNS.addService("http", "tcp", credentials::port)) {
     Serial.println("Failed to add mDNS service");
@@ -93,17 +93,10 @@ void loop() {
       Serial.println(serverPath);
       http.begin(serverPath.c_str());
       int httpResponseCode = http.PUT(credentials::thingDescription);
-      if (httpResponseCode = 201) {
-        Serial.print("HTTP Response code:");
-        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        Serial.println(payload);
-      } else {
-        Serial.print("HTTP Response code:");
-        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        Serial.println(payload);
-      }
+      Serial.print("HTTP Response code:");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      Serial.println(payload);
       gotResponse = true;
       http.end();
     }
