@@ -61,7 +61,9 @@ void setup() {
 }
 
 void loop() {
-  if (WiFi.status()==WL_CONNECTED) {
+  server.handleClient();
+
+  if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
     if(!uploaded){
