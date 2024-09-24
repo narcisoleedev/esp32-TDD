@@ -51,10 +51,10 @@ void setup() {
   Serial.println("HTTP service added to mDNS");
 
   //Server routes
-  server.on("/", handleRoot());
-  server.on("/getThingDescription", getThingDescription());
-  server.on("/doSomething", doSomething());
-  server.onNotFound(handleNotFound());
+  server.on("/", handleRoot);
+  server.on("/getThingDescription", getThingDescription);
+  server.on("/doSomething", doSomething);
+  server.onNotFound(handleNotFound);
 
   server.begin();
   Serial.println("HTTP server started");
