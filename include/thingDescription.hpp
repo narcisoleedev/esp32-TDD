@@ -9,27 +9,14 @@ const char* thingDescription = R"(
     }
   ],
   "title": "ESP32 Device",
-  "id": "urn:dev:ops:32473-ESP32-001",
+  "id": "urn:dev:ops:ESP32-001",
   "base": "http://esp32.local",
   "security": ["nosec_sc"],
   "properties": {
-    "status": {
+    "getThingDescription": {
       "type": "string",
-      "title": "Device Status",
-      "description": "Returns a status message from the device.",
-      "readOnly": true,
-      "forms": [
-        {
-          "href": "/",
-          "contentType": "text/plain",
-          "op": "readproperty"
-        }
-      ]
-    },
-    "thingDescription": {
-      "type": "string",
-      "title": "Thing Description",
-      "description": "Provides the Thing Description of the device.",
+      "title": "Get Thing Description",
+      "description": "Provides the Thing Description of the device",
       "readOnly": true,
       "forms": [
         {
@@ -42,8 +29,8 @@ const char* thingDescription = R"(
   },
   "actions": {
     "doSomething": {
-      "title": "Do Something",
-      "description": "Executes the 'doSomething' action on the device.",
+      "title": "Do something",
+      "description": "Does something",
       "forms": [
         {
           "href": "/doSomething",
