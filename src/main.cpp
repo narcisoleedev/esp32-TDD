@@ -46,9 +46,9 @@ void setup() {
     delay(500);
     Serial.println("Connecting to WiFi...");
   }
-
+  
+  //Serial.println("Local IP: " + WiFi.localIP());
   Serial.println("Connected to the WiFi network");
-  Serial.println("Local IP: " + WiFi.localIP());
 
   if (!MDNS.begin("esp32")){ //Start mDNS service
     Serial.println("Error starting mDNS");
