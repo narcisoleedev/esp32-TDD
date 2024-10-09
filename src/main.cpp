@@ -9,6 +9,7 @@
 #include "../include/thingDescription.hpp"
 
 int pin = 2;
+int buzzerPin = 23;
 bool uploaded = false;
 
 JsonDocument doc;
@@ -28,7 +29,10 @@ void getThingDescription(){
 }
 
 void doSomething() {
-  //doSomething
+  tone(buzzerPin, 1000);
+  delay(1000);            
+  noTone(buzzerPin); 
+  server.send(200, "text/plain", "buzz...");
 }
 
 void isUpdated(){
@@ -37,6 +41,7 @@ void isUpdated(){
 
 void setup() {
   pinMode(pin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
   Serial.begin(9600);
 
   deserializeJson(doc, thingDescription);
@@ -71,35 +76,51 @@ void setup() {
 }
 
 void loop() {
-  server.handleClient();
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
 
+  Serial.println(uploaded);
+  if (WiFi.status() == WL_CONNECTED) {
+
+    HTTPClient http;
     if(!uploaded){ //If the thing was uploaded or not
-      int n = MDNS.queryService("wot", "tcp"); //Query the directory by DNS-SD and returns >=0 if found
+      int n = MDNS.queryService("_wot", "_tcp"); //Query the directory by DNS-SD and returns >=0 if found
+      delay(2500);
       if (n == 0) { 
         Serial.println("No services were found");
       } else {
         Serial.println("Service found");
+        Serial.println(String(n) + " service(s) found");
+        for (int i = 0; i < n; i++) {
+            Serial.print("Service Name: ");
+            Serial.println(MDNS.hostname(i));
+            Serial.print("IP Address: ");
+            Serial.println(MDNS.IP(i));
+            Serial.print("Port: ");
+            Serial.println(MDNS.port(i));
+        }
 
         String thingDescriptionId = doc["id"].as<String>();
-        String serverPath = "http://" + MDNS.IP(n).toString() + ":8000/things/" + thingDescriptionId;
+        String serverPath = "http://" + MDNS.IP(0).toString() + ":8000/things/" + thingDescriptionId;
         Serial.println(serverPath); //Debuggggg :)
 
-        http.begin(serverPath.c_str()); //Start http communication
-
-        int httpResponseCode = http.PUT(thingDescription); //Get HTTP response code
-        Serial.println("HTTP Response code:" + httpResponseCode);
-
-        String payload = http.getString(); //Get the payload
-        Serial.println(payload);
-
-        http.end();
-        uploaded = true;
-        isUpdated();
+        if (http.begin(serverPath)) {
+          Serial.println("HTTP Begin Successful");
+          http.addHeader("Content-Type", "application/json");
+          http.setTimeout(5000);
+          int httpResponseCode = http.PUT(thingDescription);  // Get HTTP response code
+          if (httpResponseCode > 0) {
+              Serial.println("HTTP Response code: " + String(httpResponseCode));
+          } else {
+               Serial.println("Error on HTTP request: " + http.errorToString(httpResponseCode));
+          }
+          http.end();
+          uploaded = true;
+          isUpdated();
+          } else {
+              Serial.println("HTTP Begin Failed");
+          }
       }
     } else {
-      server.handleClient(); //If already uploaded it will handle the server as normal 
+      server.handleClient(); //Handle client
     }
 
   } else {
