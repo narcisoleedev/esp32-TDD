@@ -99,7 +99,7 @@ void loop() {
         }
 
         String thingDescriptionId = doc["id"].as<String>();
-        String serverPath = "http://" + MDNS.IP(0).toString() + ":8000/things/" + thingDescriptionId;
+        String serverPath = "http://" + MDNS.IP(0).toString() + ":" + MDNS.port(i) + "/things/" + thingDescriptionId;
         Serial.println(serverPath); //Debuggggg :)
 
         if (http.begin(serverPath)) {
